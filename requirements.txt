@@ -1,0 +1,8 @@
+Django>=4.2
+pandas
+matplotlib
+seaborn
+liac-arff
+requests
+gunicorn
+whitenoise
