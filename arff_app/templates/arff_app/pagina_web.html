@@ -47,43 +47,43 @@
 
             {% if protocol_col %}
                 <h5>Distribución de {{ protocol_col }}</h5>
+                
                 <div class="row g-3 mb-4">
+
                     {% if plots.prot_full %}
-                    <div class="col-12">
-                        <div class="card p-3 mb-3">
-                            <img class="plot-img" src="data:image/png;base64,{{ plots.prot_full.full }}" alt="full"/>
+                    <div class="col-md-6">
+                        <div class="card p-2">
+                            <img class="plot-img" src="data:image/png;base64,{{ plots.prot_full.thumb }}" alt="full"/>
                         </div>
                     </div>
                     {% endif %}
 
-                    <div class="col-12">
-                        <div class="row g-3">
-                            {% if plots.prot_train %}
-                            <div class="col-md-4">
-                                <div class="card p-2">
-                                    <img class="plot-img" src="data:image/png;base64,{{ plots.prot_train.full }}" alt="train"/>
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% if plots.prot_val %}
-                            <div class="col-md-4">
-                                <div class="card p-2">
-                                    <img class="plot-img" src="data:image/png;base64,{{ plots.prot_val.full }}" alt="val"/>
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% if plots.prot_test %}
-                            <div class="col-md-4">
-                                <div class="card p-2">
-                                    <img class="plot-img" src="data:image/png;base64,{{ plots.prot_test.full }}" alt="test"/>
-                                </div>
-                            </div>
-                            {% endif %}
+                    {% if plots.prot_train %}
+                    <div class="col-md-6">
+                        <div class="card p-2">
+                            <img class="plot-img" src="data:image/png;base64,{{ plots.prot_train.thumb }}" alt="train"/>
                         </div>
                     </div>
-                </div>
+                    {% endif %}
+
+                    {% if plots.prot_val %}
+                    <div class="col-md-6">
+                        <div class="card p-2">
+                            <img class="plot-img" src="data:image/png;base64,{{ plots.prot_val.thumb }}" alt="val"/>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if plots.prot_test %}
+                    <div class="col-md-6">
+                        <div class="card p-2">
+                            <img class="plot-img" src="data:image/png;base64,{{ plots.prot_test.thumb }}" alt="test"/>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                </div> {% endif %}
             {% endif %}
-        {% endif %}
     </div>
 
     <script>
