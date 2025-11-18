@@ -108,8 +108,15 @@ def _plot_protocol_pair(series, title, order=None, thumb_size=(6, 4), full_size=
 
 
 def analyze_arff(request):
+    # helper to access session safely: some deployments may not have session table migrated
+    def _safe_session_get(key, default=None):
+        try:
+            return request.session.get(key, default)
+        except Exception:
+            return default
+
     # default display rows stored in session; default to 500
-    default_rows = request.session.get('display_rows', 500)
+    default_rows = _safe_session_get('display_rows', 500)
     context = {'form': ArffUploadForm(), 'display_rows': default_rows}
 
     if request.method == 'POST':
@@ -130,8 +137,12 @@ def analyze_arff(request):
                 # clamp to closest allowed value
                 requested = 500
 
-            # store preference in session for subsequent visits
-            request.session['display_rows'] = requested
+            # store preference in session for subsequent visits (best-effort)
+            try:
+                request.session['display_rows'] = requested
+            except Exception:
+                # session backend not available (e.g. migrations not applied) -> ignore
+                pass
 
             max_display_rows = requested
 
