@@ -108,13 +108,32 @@ def _plot_protocol_pair(series, title, order=None, thumb_size=(6, 4), full_size=
 
 
 def analyze_arff(request):
-    context = {'form': ArffUploadForm()}
+    # default display rows stored in session; default to 500
+    default_rows = request.session.get('display_rows', 500)
+    context = {'form': ArffUploadForm(), 'display_rows': default_rows}
 
     if request.method == 'POST':
         form = ArffUploadForm(request.POST, request.FILES)
         if form.is_valid():
             file_content = None
             file_name = None
+
+            # Read desired display rows from the POST (user-selectable) or fallback to session/default
+            try:
+                requested = int(request.POST.get('display_rows', request.session.get('display_rows', 500)))
+            except Exception:
+                requested = request.session.get('display_rows', 500)
+
+            # Allowed options to avoid abuse
+            allowed = [100, 250, 500, 1000]
+            if requested not in allowed:
+                # clamp to closest allowed value
+                requested = 500
+
+            # store preference in session for subsequent visits
+            request.session['display_rows'] = requested
+
+            max_display_rows = requested
 
             # Only local uploads are supported now
             arff_file = request.FILES.get('arff_file')
@@ -162,11 +181,11 @@ def analyze_arff(request):
                         # keep original if conversion fails
                         pass
 
-                # Prepare the dataframe for display (limit to 1000 rows to avoid huge responses)
+                # Prepare the dataframe for display (limit to max_display_rows to avoid huge responses)
                 truncated = False
-                if len(df) > 1000:
+                if len(df) > max_display_rows:
                     truncated = True
-                    df_display = df.head(1000).reset_index(drop=True)
+                    df_display = df.head(max_display_rows).reset_index(drop=True)
                 else:
                     df_display = df.copy()
 
@@ -206,6 +225,7 @@ def analyze_arff(request):
                     'plots': plots,
                     'protocol_col': pt_col,
                     'truncated': truncated,
+                    'display_rows': max_display_rows,
                 })
             except Exception as e:
                 context['error'] = f'Error al procesar el archivo: {str(e)}'
